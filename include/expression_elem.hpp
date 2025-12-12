@@ -13,16 +13,24 @@ enum Var {
     Y = 1
 };
 
+enum DummyType {
+    ROOT             = 0,
+    ROOT_RIGHT       = 1,
+    EXPRESSION_RIGHT = 2
+};
+
 union ExpressionElemValue {
     double num;
     Operation operation;
     Var var;
+    DummyType dummy_type;
 };
 
 enum ExpressionElemType {
     NUM       = 0,
     OPERATION = 1,
-    VAR       = 2
+    VAR       = 2,
+    DUMMY     = 3
 };
 
 struct ExpressionElem {

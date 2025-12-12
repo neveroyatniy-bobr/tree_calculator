@@ -22,7 +22,7 @@ void TreePrintError(TreeError error, const char* file, int line);
 
 #define TREE_PRINT_ERROR(error) TreePrintError(error, __FILE__, __LINE__)
 
-static const tree_elem_t ROOT_VALUE = {NUM, 12315.890324};
+static const tree_elem_t ROOT_VALUE = {DUMMY, {.dummy_type = ROOT}};
 
 static const size_t BUILD_DUMP_COMMAND_SIZE = 128;
 
