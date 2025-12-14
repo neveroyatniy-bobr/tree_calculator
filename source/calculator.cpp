@@ -35,6 +35,16 @@ static double CalculateSubTree(TreeNode* node) {
                 return left_sub_tree_value * right_sub_tree_value;
             case DIV:
                 return left_sub_tree_value / right_sub_tree_value;
+            case SIN:
+                return sin(left_sub_tree_value);
+            case ARCSIN:
+                return asin(left_sub_tree_value);
+            case COS:
+                return cos(left_sub_tree_value);
+            case ARCCOS:
+                return acos(left_sub_tree_value);
+            case LN:
+                return log(left_sub_tree_value);
             default:
                 return 0;
         }
@@ -127,6 +137,37 @@ static TreeNode* DiffSubTree(TreeNode* node) {
 
                 return new_first;
             }
+
+            case SIN: {
+                TreeNode* new_first = TreeNodeInit({.type = OPERATION, {.operation = MUL}});
+                
+                TreeNode* left_mul = TreeNodeInit({.type = OPERATION, {.operation = COS}});
+                TreeNodeLinkLeft(new_first, left_mul);
+
+                TreeNode* left_cos = CopySubTree(TreeNodeGetLeft(node));
+                TreeNodeLinkLeft(left_mul, left_cos);
+                TreeNode* right_cos = TreeNodeInit({.type = NUM, {.num = 0}});
+                TreeNodeLinkRight(left_mul, right_cos);
+
+                TreeNode* right_mul = DiffSubTree(TreeNodeGetLeft(node));
+            }
+
+            case ARCSIN: {
+
+            }
+
+            case COS: {
+
+            }
+
+            case ARCCOS: {
+
+            }
+
+            case LN: {
+
+            }
+
             default:
                 return 0;
         }
@@ -216,7 +257,7 @@ void CalculatorTreeTexDump(Tree* tree) {
     return CalculatorSubTreeTexDump(TreeNodeGetLeft(TreeGetRoot(tree)));
 }
 
-void SubTreeConstConv(TreeNode* node) {
+static void SubTreeConstConv(TreeNode* node) {
     tree_elem_t node_value = TreeNodeGetValue(node);
     if (node_value.type == OPERATION) {
         SubTreeConstConv(TreeNodeGetLeft(node));
@@ -239,7 +280,7 @@ void TreeConstConv(Tree* tree) {
     return SubTreeConstConv(TreeNodeGetLeft(TreeGetRoot(tree)));
 }
 
-void SubTreeSimpleOperations(TreeNode* node) {
+static void SubTreeSimpleOperations(TreeNode* node) {
     tree_elem_t node_value = TreeNodeGetValue(node);
     if (node_value.type == OPERATION) {
         SubTreeSimpleOperations(TreeNodeGetLeft(node));
@@ -333,4 +374,8 @@ void SubTreeSimpleOperations(TreeNode* node) {
 
 void TreeSimpleOperations(Tree* tree) {
     return SubTreeSimpleOperations(TreeNodeGetLeft(TreeGetRoot(tree)));
+}
+
+void TreeNodeWithDautherInit(tree_elem_t value, TreeNode* left, TreeNode* right) {
+    
 }

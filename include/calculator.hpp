@@ -22,4 +22,6 @@ void TreeConstConv(Tree* tree);
 
 void TreeSimpleOperations(Tree* tree);
 
+void TreeNodeWithDautherInit(tree_elem_t value, TreeNode* left, TreeNode* right);
+
 #endif // CALCULATOR_HPP_

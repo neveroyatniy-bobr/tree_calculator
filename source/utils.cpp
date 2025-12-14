@@ -17,5 +17,5 @@ size_t FileSize(FILE* file) {
     struct stat stats = {};
     fstat(fileno(file), &stats);
 
-    return stats.st_size;
+    return (size_t)stats.st_size;
 }

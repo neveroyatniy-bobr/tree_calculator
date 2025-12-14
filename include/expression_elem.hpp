@@ -2,10 +2,15 @@
 #define EXPRESSION_ELEM_HPP_
 
 enum Operation {
-    ADD = 0,
-    SUB = 1,
-    MUL = 2,
-    DIV = 3
+    ADD       = 0,
+    SUB       = 1,
+    MUL       = 2,
+    DIV       = 3,
+    SIN       = 4,
+    ARCSIN    = 5,
+    COS       = 6,
+    ARCCOS    = 7,
+    LN        = 8
 };
 
 enum Var {

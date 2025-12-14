@@ -138,8 +138,11 @@ TreeNode* GetP(char** s) {
             return NULL;
         }
     }
-    else {
+    else if (isdigit(*loc_s)) {
         val = GetN(&loc_s);
+    }
+    else if (isalpha(*loc_s)) {
+        val = GetV(&loc_s);
     }
 
     *s = loc_s;
@@ -159,6 +162,73 @@ TreeNode* GetN(char** s) {
     }
 
     TreeNode* val = TreeNodeInit({.type = NUM, {.num = (double)num_val}});
+
+    *s = loc_s;
+
+    return val;
+}
+
+TreeNode* GetV(char** s) {
+    char* loc_s = *s;
+
+    char var_name[MAX_VAR_NAME] = "";
+
+    int symbol_i = 0;
+    while (isalnum(*loc_s)) {
+        var_name[symbol_i] = *loc_s;
+        loc_s++;
+        symbol_i++;
+    }
+
+    TreeNode* val = NULL;
+
+    if (strcmp(var_name, "X") == 0) {
+        val = TreeNodeInit({.type = VAR, {.num = X}});
+    }
+    else if (strcmp(var_name, "Y") == 0) {
+        val = TreeNodeInit({.type = VAR, {.num = Y}});
+    }
+    else {
+        return NULL;
+    }
+
+    *s = loc_s;
+
+    return val;
+}
+
+TreeNode* GetF(char** s) {
+    char* loc_s = *s;
+
+    char var_name[MAX_VAR_NAME] = "";
+
+    int symbol_i = 0;
+    while (isalnum(*loc_s)) {
+        var_name[symbol_i] = *loc_s;
+        loc_s++;
+        symbol_i++;
+    }
+
+    TreeNode* val = NULL;
+
+    if (strcmp(var_name, "sin") == 0) { // FIXME sin -> functions[0]
+
+    }
+    else if (strcmp(var_name, "arcsin") == 0) {
+
+    }
+    else if (strcmp(var_name, "cos") == 0) {
+
+    }
+    else if (strcmp(var_name, "arccos") == 0) {
+
+    }
+    else if (strcmp(var_name, "ln") == 0) {
+
+    }
+    else {
+        return NULL;
+    }
 
     *s = loc_s;
 
