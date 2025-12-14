@@ -2,12 +2,13 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <memory.h>
 
 #include "expression_elem.hpp"
 #include "tree.hpp"
 
 //FIXME хочу чтобы сам читал количество членов enum
-static double var[2] = {0, 0};
+static double var[2] = {1, 1};
 
 double GetVar(size_t i) {
     return var[i];
@@ -35,6 +36,8 @@ static double CalculateSubTree(TreeNode* node) {
                 return left_sub_tree_value * right_sub_tree_value;
             case DIV:
                 return left_sub_tree_value / right_sub_tree_value;
+            case POW:
+                return pow(left_sub_tree_value, right_sub_tree_value);
             case SIN:
                 return sin(left_sub_tree_value);
             case ARCSIN:
@@ -80,94 +83,24 @@ static TreeNode* DiffSubTree(TreeNode* node) {
     tree_elem_t node_value = TreeNodeGetValue(node);
     if (node_value.type == OPERATION) {
         switch (node_value.value.operation) {
-            case ADD: {
-                TreeNode* new_first = TreeNodeInit({.type = OPERATION, .value = {.operation = ADD}});
-                TreeNodeLinkLeft(new_first, DiffSubTree(TreeNodeGetLeft(node)));
-                TreeNodeLinkRight(new_first, DiffSubTree(TreeNodeGetRight(node)));
-                
-                return new_first;
-            }
-            case SUB: {
-                TreeNode* new_first = TreeNodeInit({.type = OPERATION, .value = {.operation = SUB}});
-                TreeNodeLinkLeft(new_first, DiffSubTree(TreeNodeGetLeft(node)));
-                TreeNodeLinkRight(new_first, DiffSubTree(TreeNodeGetRight(node)));
-
-                return new_first;
-            }
-            case MUL: {
-                TreeNode* new_first = TreeNodeInit({.type = OPERATION, .value = {.operation = ADD}});
-
-                TreeNode* left_mul = TreeNodeInit({.type = OPERATION, .value = {.operation = MUL}});
-                TreeNodeLinkLeft(new_first, left_mul);
-
-                TreeNode* right_mul = TreeNodeInit({.type = OPERATION, .value = {.operation = MUL}});
-                TreeNodeLinkRight(new_first, right_mul);
-
-                TreeNodeLinkLeft(left_mul, DiffSubTree(TreeNodeGetLeft(node)));
-                TreeNodeLinkRight(left_mul, CopySubTree(TreeNodeGetRight(node)));
-
-                TreeNodeLinkLeft(right_mul, DiffSubTree(TreeNodeGetRight(node)));
-                TreeNodeLinkRight(right_mul, CopySubTree(TreeNodeGetLeft(node)));
-
-                return new_first;
-            }
-            case DIV: {
-                TreeNode* new_first = TreeNodeInit({.type = OPERATION, .value = {.operation = DIV}});
-
-                TreeNode* dividend  = TreeNodeInit({.type = OPERATION, .value = {.operation = SUB}});
-                TreeNodeLinkLeft(new_first, dividend);
-
-                TreeNode* left_mul = TreeNodeInit({.type = OPERATION, .value = {.operation = MUL}});
-                TreeNodeLinkLeft(dividend, left_mul);
-
-                TreeNode* right_mul = TreeNodeInit({.type = OPERATION, .value = {.operation = MUL}});
-                TreeNodeLinkRight(dividend, right_mul);
-
-                TreeNodeLinkLeft(left_mul, DiffSubTree(TreeNodeGetLeft(node)));
-                TreeNodeLinkRight(left_mul, CopySubTree(TreeNodeGetRight(node)));
-
-                TreeNodeLinkLeft(right_mul, DiffSubTree(TreeNodeGetRight(node)));
-                TreeNodeLinkRight(right_mul, CopySubTree(TreeNodeGetLeft(node)));
-
-                TreeNode* divisor = TreeNodeInit({.type = OPERATION, .value = {.operation = MUL}});
-                TreeNodeLinkRight(new_first, divisor);
-                
-                TreeNodeLinkLeft(divisor, CopySubTree(TreeNodeGetRight(node)));
-                TreeNodeLinkRight(divisor, CopySubTree(TreeNodeGetRight(node)));
-
-                return new_first;
-            }
-
-            case SIN: {
-                TreeNode* new_first = TreeNodeInit({.type = OPERATION, {.operation = MUL}});
-                
-                TreeNode* left_mul = TreeNodeInit({.type = OPERATION, {.operation = COS}});
-                TreeNodeLinkLeft(new_first, left_mul);
-
-                TreeNode* left_cos = CopySubTree(TreeNodeGetLeft(node));
-                TreeNodeLinkLeft(left_mul, left_cos);
-                TreeNode* right_cos = TreeNodeInit({.type = NUM, {.num = 0}});
-                TreeNodeLinkRight(left_mul, right_cos);
-
-                TreeNode* right_mul = DiffSubTree(TreeNodeGetLeft(node));
-            }
-
-            case ARCSIN: {
-
-            }
-
-            case COS: {
-
-            }
-
-            case ARCCOS: {
-
-            }
-
-            case LN: {
-
-            }
-
+            case ADD:
+                return ADD(dL, dR);
+            case SUB:
+                return SUB(dL, dR);
+            case MUL:
+                return ADD(MUL(dL, cR), MUL(cL, dR));
+            case DIV:
+                return DIV(SUB(MUL(dL, cR), MUL(cL, dR)), MUL(cR, cR));
+            case POW:
+                return MUL(POW(cL, cR), ADD(MUL(DIV(dL, cL), cR), MUL(LN(cL), dR)));
+            case SIN:
+                return MUL(COS(cL), dL);
+            case ARCSIN:
+            case COS:
+                return MUL(MUL(CONST(-1), SIN(cL)), dL);
+            case ARCCOS:
+            case LN:
+                return MUL(DIV(CONST(1), cL), dL);
             default:
                 return 0;
         }
@@ -230,6 +163,21 @@ static void CalculatorSubTreeTexDump(TreeNode* node) {
                 printf(")");
                 
                 return;
+            }
+            case POW: {
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
+                printf("^{");
+                CalculatorSubTreeTexDump(TreeNodeGetRight(node));
+                printf("}");
+
+                printf(")");
+            }
+            case LN: {
+                printf("\\ln{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
+                printf("}");
+
+                printf(")");
             }
             default:
                 return;
@@ -340,14 +288,14 @@ static void SubTreeSimpleOperations(TreeNode* node) {
                 TreeNodeLinkRight(node, node_left.right);
             }
             if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 0)) {
-                TreeNodeDestroy(&node->left);
-                TreeNodeDestroy(&node->right);
+                TreeSubTreeDestroy(&node->left);
+                TreeSubTreeDestroy(&node->right);
 
                 TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
             }
             if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 0)) {
-                TreeNodeDestroy(&node->left);
-                TreeNodeDestroy(&node->right);
+                TreeSubTreeDestroy(&node->left);
+                TreeSubTreeDestroy(&node->right);
 
                 TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
             }
@@ -363,10 +311,50 @@ static void SubTreeSimpleOperations(TreeNode* node) {
                 TreeNodeLinkRight(node, node_left.right);
             }
             if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 0)) {
-                TreeNodeDestroy(&node->left);
-                TreeNodeDestroy(&node->right);
+                TreeSubTreeDestroy(&node->left);
+                TreeSubTreeDestroy(&node->right);
 
                 TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
+            }
+        }
+        if (node_value.value.operation == POW) {
+            if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 0)) {
+                if (IsEqual(CalculateSubTree(TreeNodeGetRight(node)), 0)) {
+                    TreeSubTreeDestroy(&node->left);
+                    TreeSubTreeDestroy(&node->right);
+    
+                    TreeNodeSetValue(node, {.type = NUM, .value = {.num = 1}});
+                }
+                else {
+                    TreeSubTreeDestroy(&node->left);
+                    TreeSubTreeDestroy(&node->right);
+    
+                    TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
+                }
+            }
+            if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 1)) {
+                TreeSubTreeDestroy(&node->left);
+                TreeSubTreeDestroy(&node->right);
+
+                TreeNodeSetValue(node, {.type = NUM, .value = {.num = 1}});
+            }
+            if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 0)) {
+                TreeSubTreeDestroy(&node->left);
+                TreeSubTreeDestroy(&node->right);
+
+                TreeNodeSetValue(node, {.type = NUM, .value = {.num = 1}});
+            }
+            if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 1)) {
+                TreeSubTreeDestroy(&node->right);
+                TreeNode* node_left = node->left;
+
+                TreeNodeSetValue(node, left_sub_tree);
+                TreeNodeLinkLeft(node, TreeNodeGetLeft(node_left));
+                TreeNodeLinkRight(node, TreeNodeGetRight(node));
+
+                TreeNodeLinkLeft(node_left, NULL);
+                TreeNodeLinkRight(node_left, NULL);
+                TreeSubTreeDestroy(&node_left);
             }
         }
     }
@@ -376,6 +364,19 @@ void TreeSimpleOperations(Tree* tree) {
     return SubTreeSimpleOperations(TreeNodeGetLeft(TreeGetRoot(tree)));
 }
 
-void TreeNodeWithDautherInit(tree_elem_t value, TreeNode* left, TreeNode* right) {
-    
+TreeNode* TreeNodeWithDautherInit(tree_elem_t value, TreeNode* left, TreeNode* right) {
+    TreeNode* node = (TreeNode*)calloc(1, sizeof(TreeNode));
+
+    if (node == NULL) {
+        return NULL;
+    }
+
+    node->parent = NULL;
+
+    TreeNodeLinkLeft(node, left);
+    TreeNodeLinkRight(node, right);
+
+    node->value = value;
+
+    return node;
 }

@@ -5,13 +5,15 @@
 
 #define MAX_VAR_NAME 128
 
-const char* functions[] = {"sin", "arcsin", "cos", "arccos", "ln"};
+static const char* functions[] = {"sin", "arcsin", "cos", "arccos", "ln"};
 
 TreeNode* GetG(char** s);
 
 TreeNode* GetE(char** s);
 
 TreeNode* GetT(char** s);
+
+TreeNode* GetPow(char** s);
 
 TreeNode* GetP(char** s);
 

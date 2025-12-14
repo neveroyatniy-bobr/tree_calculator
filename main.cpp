@@ -20,7 +20,7 @@ int main() {
 
     TREE_DUMP(&calculator_tree);
 
-    if (calculator_tree.root == NULL) {
+    if (calculator_tree.root->left == NULL) {
         fprintf(stderr, "Syntax Error!\n");
         return 1;
     }
@@ -29,7 +29,28 @@ int main() {
 
     printf("The answer is: %lf\n", ans);
 
+    Tree diff_tree = {};
+    TreeInit(&diff_tree);
+    
+    TREE_DUMP(&calculator_tree);
+    
+    DiffTree(&calculator_tree, &diff_tree);
+
+    TREE_DUMP(&diff_tree);
+
+    TreeConstConv(&diff_tree);
+    TreeSimpleOperations(&diff_tree);
+    TreeConstConv(&diff_tree);
+    TreeSimpleOperations(&diff_tree);
+    TreeConstConv(&diff_tree);
+    TreeSimpleOperations(&diff_tree);
+    TREE_DUMP(&diff_tree);
+    
+    CalculatorTreeTexDump(&diff_tree);
+
     free(start_s);
+
+    TreeDestroy(&diff_tree);
 
     TreeDestroy(&calculator_tree);
     

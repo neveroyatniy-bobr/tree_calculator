@@ -78,7 +78,7 @@ TreeNode* GetE(char** s) {
 TreeNode* GetT(char** s) {
     char* loc_s = *s;
 
-    TreeNode* val = GetP(&loc_s);
+    TreeNode* val = GetPow(&loc_s);
     if (val == NULL) {
         *s = loc_s;
 
@@ -89,7 +89,7 @@ TreeNode* GetT(char** s) {
         if (*loc_s == '*') {
             loc_s++;
 
-            TreeNode* mul_val = GetT(&loc_s);
+            TreeNode* mul_val = GetPow(&loc_s);
             if (mul_val == NULL) {
                 *s = loc_s;
                 return NULL;
@@ -104,7 +104,7 @@ TreeNode* GetT(char** s) {
         else {
             loc_s++;
 
-            TreeNode* div_val = GetT(&loc_s);
+            TreeNode* div_val = GetPow(&loc_s);
             if (div_val == NULL) {
                 *s = loc_s;
                 return NULL;
@@ -116,6 +116,37 @@ TreeNode* GetT(char** s) {
 
             val = div_node;
         }
+    }
+
+    *s = loc_s;
+
+    return val;
+}
+
+TreeNode* GetPow(char** s) {
+    char* loc_s = *s;
+
+    TreeNode* val = GetP(&loc_s);
+    if (val == NULL) {
+        *s = loc_s;
+
+        return NULL;
+    }
+
+    if (*loc_s == '^') {
+        loc_s++;
+
+        TreeNode* pow_val = GetP(&loc_s);
+        if (pow_val == NULL) {
+            *s = loc_s;
+            return NULL;
+        }
+
+        TreeNode* pow_node = TreeNodeInit({.type = OPERATION, {.operation = POW}});
+        TreeNodeLinkLeft(pow_node, val);
+        TreeNodeLinkRight(pow_node, pow_val);
+
+        val = pow_node;
     }
 
     *s = loc_s;

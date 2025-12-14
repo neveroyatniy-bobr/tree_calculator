@@ -6,11 +6,12 @@ enum Operation {
     SUB       = 1,
     MUL       = 2,
     DIV       = 3,
-    SIN       = 4,
-    ARCSIN    = 5,
-    COS       = 6,
-    ARCCOS    = 7,
-    LN        = 8
+    POW       = 4,
+    SIN       = 5,
+    ARCSIN    = 6,
+    COS       = 7,
+    ARCCOS    = 8,
+    LN        = 9
 };
 
 enum Var {
