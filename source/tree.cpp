@@ -358,8 +358,16 @@ TreeNode* TreeGetRoot(Tree* tree) {
     return tree->root;
 }
 
+static size_t TreeSubTreeGetSize(TreeNode* node) {
+    if (TreeNodeGetLeft(node) == NULL && TreeNodeGetRight(node) == 0) {
+        return 1;
+    }
+
+    return TreeSubTreeGetSize(TreeNodeGetLeft(node)) + TreeSubTreeGetSize(TreeNodeGetRight(node));
+}
+
 size_t TreeGetSize(Tree* tree) {
     assert(tree);
 
-    return tree->size;
+    return TreeSubTreeGetSize(TreeNodeGetLeft(TreeGetRoot(tree)));
 }

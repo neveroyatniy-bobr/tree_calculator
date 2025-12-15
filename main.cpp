@@ -7,6 +7,8 @@
 #include "expression_parser.hpp"
 
 int main() {
+    TexDumpStart();
+
     Tree calculator_tree = {};
     TreeInit(&calculator_tree);
 
@@ -26,6 +28,8 @@ int main() {
         return 1;
     }
 
+    CalculatorTreeTexDump(&calculator_tree);
+
     double ans = CalculateTree(&calculator_tree);
 
     printf("The answer is: %lf\n", ans);
@@ -33,27 +37,19 @@ int main() {
     Tree diff_tree = {};
     TreeInit(&diff_tree);
     
-    TREE_DUMP(&calculator_tree);
-    
     DiffTree(&calculator_tree, &diff_tree);
 
-    TREE_DUMP(&diff_tree);
-
-    TreeConstConv(&diff_tree);
-    TreeSimpleOperations(&diff_tree);
-    TreeConstConv(&diff_tree);
-    TreeSimpleOperations(&diff_tree);
-    TreeConstConv(&diff_tree);
-    TreeSimpleOperations(&diff_tree);
-    TREE_DUMP(&diff_tree);
-    
     CalculatorTreeTexDump(&diff_tree);
+
+    TreeSimplify(&diff_tree);
 
     free(start_s);
 
     TreeDestroy(&diff_tree);
 
     TreeDestroy(&calculator_tree);
+
+    TexDumpEnd();
     
     return 0;
 }

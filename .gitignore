@@ -1,3 +1,7 @@
 *.exe
 *.dot
 *.html
+*.pdf
+*.tex
+*.aux
+*.log

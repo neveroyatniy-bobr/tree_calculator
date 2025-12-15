@@ -6,6 +6,9 @@
 
 static const double epsilone = 1e-12;
 
+static const char* TEX_DUMP_BUILD_FILE_NAME = "texdump.tex";
+static const char* TEX_DUMP_FILE_NAME = "texdump.pdf";
+
 double GetVar(size_t i);
 
 double SetVar(size_t i, double value);
@@ -16,11 +19,17 @@ double CalculateTree(Tree* tree);
 
 void DiffTree(Tree* tree, Tree* diffed_tree);
 
+void TexDumpStart();
+
 void CalculatorTreeTexDump(Tree* tree);
+
+void TexDumpEnd();
 
 void TreeConstConv(Tree* tree);
 
 void TreeSimpleOperations(Tree* tree);
+
+void TreeSimplify(Tree* tree);
 
 TreeNode* TreeNodeWithDautherInit(tree_elem_t value, TreeNode* left, TreeNode* right);
 

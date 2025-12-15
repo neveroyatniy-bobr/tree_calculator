@@ -122,7 +122,7 @@ void DiffTree(Tree* tree, Tree* diffed_tree) {
     TreeNodeLinkLeft(TreeGetRoot(diffed_tree), DiffSubTree(TreeNodeGetLeft(TreeGetRoot(tree))));
 }
 
-static void CalculatorSubTreeTexDump(TreeNode* node) {
+static void CalculatorSubTreeTexDump(TreeNode* node, FILE* build_file) {
     tree_elem_t node_value = TreeNodeGetValue(node);
     tree_elem_t node_parent_value = TreeNodeGetValue(TreeNodeGetParent(node));
     if (node_value.type == OPERATION) {
@@ -130,92 +130,92 @@ static void CalculatorSubTreeTexDump(TreeNode* node) {
             case ADD:
                 if ((node_parent_value.type == OPERATION && node_parent_value.value.operation == MUL) 
                  || (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW)) {
-                    printf("(");
+                    fprintf(build_file, "(");
                 }
 
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf(" + ");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node));
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, " + ");
+                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
 
                 if ((node_parent_value.type == OPERATION && node_parent_value.value.operation == MUL) 
                  || (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW)) {
-                    printf(")");
+                    fprintf(build_file, ")");
                 }
 
                 return;
             case SUB:
                 if ((node_parent_value.type == OPERATION && node_parent_value.value.operation == MUL) 
                  || (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW)) {
-                    printf("(");
+                    fprintf(build_file, "(");
                 }
 
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf(" - ");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node));
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, " - ");
+                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
 
                 if ((node_parent_value.type == OPERATION && node_parent_value.value.operation == MUL) 
                  || (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW)) {
-                    printf(")");
+                    fprintf(build_file, ")");
                 }
 
                 return;
             case MUL:
                 if (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW) {
-                    printf("(");
+                    fprintf(build_file, "(");
                 }
 
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf(" \\cdot ");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node));
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, " \\cdot ");
+                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
 
                 if (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW) {
-                    printf(")");
+                    fprintf(build_file, ")");
                 }
 
                 return;
             case DIV:
-                printf("\\frac{");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf("}{");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node));
-                printf("}");
+                fprintf(build_file, "\\frac{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, "}{");
+                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
+                fprintf(build_file, "}");
 
                 return;
             case POW:
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf("^{");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node));
-                printf("}");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, "^{");
+                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
+                fprintf(build_file, "}");
 
                 return;
             case SIN:
-                printf("\\sin{");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf("}");
+                fprintf(build_file, "\\sin{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, "}");
 
                 return;
             case ARCSIN:
-                printf("\\arcsin{");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf("}");
+                fprintf(build_file, "\\arcsin{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, "}");
 
                 return;
             case COS:
-                printf("\\cos{");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf("}");
+                fprintf(build_file, "\\cos{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, "}");
 
                 return;
             case ARCCOS:
-                printf("\\arccos{");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf("}");
+                fprintf(build_file, "\\arccos{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, "}");
 
                 return;
             case LN:
-                printf("\\ln{");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
-                printf("}");
+                fprintf(build_file, "\\ln{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+                fprintf(build_file, "}");
 
                 return;
             default:
@@ -227,21 +227,63 @@ static void CalculatorSubTreeTexDump(TreeNode* node) {
         switch (node_value.value.var)
         {
         case X:
-            printf("x");
+            fprintf(build_file, "x");
             return;
         case Y:
-            printf("y");
+            fprintf(build_file, "y");
             return;
         default:
             return;
         }
     }
+    
+    if (node_value.value.num < 0) {
+        fprintf(build_file, "(");
+    }
 
-    printf("%.3lf", node_value.value.num);
+    fprintf(build_file, "%.3lf", node_value.value.num);
+
+    if (node_value.value.num < 0) {
+        fprintf(build_file, ")");
+    }
+}
+
+void TexDumpStart() {
+    FILE* build_file = fopen(TEX_DUMP_BUILD_FILE_NAME, "w");
+
+    const char* file_start = "\\documentclass{article}\n\\usepackage{graphicx} % Required for inserting images\n\\title{dump}\n\\author{Николай Антипов}\n\\date{November 2025}\n\\begin{document}\n";
+
+    fprintf(build_file, "%s", file_start);
+
+    fclose(build_file);
 }
 
 void CalculatorTreeTexDump(Tree* tree) {
-    return CalculatorSubTreeTexDump(TreeNodeGetLeft(TreeGetRoot(tree)));
+    FILE* build_file = fopen(TEX_DUMP_BUILD_FILE_NAME, "a");
+
+    fprintf(build_file, "$");
+    
+    CalculatorSubTreeTexDump(TreeNodeGetLeft(TreeGetRoot(tree)), build_file);
+
+    fprintf(build_file, "$\\newline\n");
+
+    fclose(build_file);
+
+}
+
+void TexDumpEnd() {
+    FILE* build_file = fopen(TEX_DUMP_BUILD_FILE_NAME, "a");
+
+    const char* file_end = "\\end{document}\n";
+
+    fprintf(build_file, "%s", file_end);
+
+    fclose(build_file);
+
+    char command[BUILD_DUMP_COMMAND_SIZE + 1] = "";
+    snprintf(command, BUILD_DUMP_COMMAND_SIZE, "pdflatex %s 12> /dev/null", TEX_DUMP_BUILD_FILE_NAME);
+
+    system(command);
 }
 
 static void SubTreeConstConv(TreeNode* node) {
@@ -401,6 +443,22 @@ static void SubTreeSimpleOperations(TreeNode* node) {
 
 void TreeSimpleOperations(Tree* tree) {
     return SubTreeSimpleOperations(TreeNodeGetLeft(TreeGetRoot(tree)));
+}
+
+void TreeSimplify(Tree* tree) {
+    size_t last_tree_size = TreeGetSize(tree);
+    TreeConstConv(tree);
+    TreeSimpleOperations(tree);
+    size_t curr_tree_size = TreeGetSize(tree);
+
+    while (last_tree_size != curr_tree_size) {
+        CalculatorTreeTexDump(tree);
+        last_tree_size = curr_tree_size;
+        TreeConstConv(tree);
+        TreeSimpleOperations(tree);
+
+        curr_tree_size = TreeGetSize(tree);
+    }
 }
 
 TreeNode* TreeNodeWithDautherInit(tree_elem_t value, TreeNode* left, TreeNode* right) {
