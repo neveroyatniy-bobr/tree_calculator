@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "calculator.hpp"
+
 TreeNode* GetG(char** s) {
     char* loc_s = *s;
 
@@ -47,9 +49,7 @@ TreeNode* GetE(char** s) {
                 return NULL;
             }
 
-            TreeNode* add_node = TreeNodeInit({.type = OPERATION, {.operation = ADD}});
-            TreeNodeLinkLeft(add_node, val);
-            TreeNodeLinkRight(add_node, add_val);
+            TreeNode* add_node = ADD(val, add_val);
 
             val = add_node;
         }
@@ -62,9 +62,7 @@ TreeNode* GetE(char** s) {
                 return NULL;
             }
 
-            TreeNode* sub_node = TreeNodeInit({.type = OPERATION, {.operation = SUB}});
-            TreeNodeLinkLeft(sub_node, val);
-            TreeNodeLinkRight(sub_node, sub_val);
+            TreeNode* sub_node = SUB(val, sub_val);
 
             val = sub_node;
         }
@@ -95,9 +93,7 @@ TreeNode* GetT(char** s) {
                 return NULL;
             }
 
-            TreeNode* mul_node = TreeNodeInit({.type = OPERATION, {.operation = MUL}});
-            TreeNodeLinkLeft(mul_node, val);
-            TreeNodeLinkRight(mul_node, mul_val);
+            TreeNode* mul_node = MUL(val, mul_val);
 
             val = mul_node;
         }
@@ -110,9 +106,7 @@ TreeNode* GetT(char** s) {
                 return NULL;
             }
 
-            TreeNode* div_node = TreeNodeInit({.type = OPERATION, {.operation = DIV}});
-            TreeNodeLinkLeft(div_node, val);
-            TreeNodeLinkRight(div_node, div_val);
+            TreeNode* div_node = DIV(val, div_val);
 
             val = div_node;
         }
@@ -142,9 +136,7 @@ TreeNode* GetPow(char** s) {
             return NULL;
         }
 
-        TreeNode* pow_node = TreeNodeInit({.type = OPERATION, {.operation = POW}});
-        TreeNodeLinkLeft(pow_node, val);
-        TreeNodeLinkRight(pow_node, pow_val);
+        TreeNode* pow_node = POW(val, pow_val);
 
         val = pow_node;
     }
@@ -173,7 +165,34 @@ TreeNode* GetP(char** s) {
         val = GetN(&loc_s);
     }
     else if (isalpha(*loc_s)) {
-        val = GetV(&loc_s);
+        char name[MAX_NAME_LEN] = "";
+
+        int symbol_i = 0;
+        while (isalnum(*loc_s)) {
+            if (symbol_i >= MAX_NAME_LEN - 1) {
+                return NULL;
+            }
+
+            name[symbol_i] = *loc_s;
+            loc_s++;
+            symbol_i++;
+        }
+
+        loc_s -= symbol_i;
+
+        bool is_func = false;
+        int func_cnt = sizeof(functions) / sizeof(functions[0]);
+        for (int func_i = 0; func_i < func_cnt; func_i++) {
+            if (strcmp(name, functions[func_i]) == 0) {
+                is_func = true;
+            }
+        }
+        if (is_func) {
+            val = GetF(&loc_s);
+        }
+        else {
+            val = GetV(&loc_s);
+        }
     }
 
     *s = loc_s;
@@ -202,10 +221,14 @@ TreeNode* GetN(char** s) {
 TreeNode* GetV(char** s) {
     char* loc_s = *s;
 
-    char var_name[MAX_VAR_NAME] = "";
+    char var_name[MAX_NAME_LEN] = "";
 
     int symbol_i = 0;
     while (isalnum(*loc_s)) {
+        if (symbol_i >= MAX_NAME_LEN - 1) {
+            return NULL;
+        }
+
         var_name[symbol_i] = *loc_s;
         loc_s++;
         symbol_i++;
@@ -213,10 +236,10 @@ TreeNode* GetV(char** s) {
 
     TreeNode* val = NULL;
 
-    if (strcmp(var_name, "X") == 0) {
+    if (strcmp(var_name, "X") == 0 || strcmp(var_name, "x") == 0) {
         val = TreeNodeInit({.type = VAR, {.num = X}});
     }
-    else if (strcmp(var_name, "Y") == 0) {
+    else if (strcmp(var_name, "Y") == 0 || strcmp(var_name, "y") == 0) {
         val = TreeNodeInit({.type = VAR, {.num = Y}});
     }
     else {
@@ -231,31 +254,49 @@ TreeNode* GetV(char** s) {
 TreeNode* GetF(char** s) {
     char* loc_s = *s;
 
-    char var_name[MAX_VAR_NAME] = "";
+    char func_name[MAX_NAME_LEN] = "";
 
     int symbol_i = 0;
     while (isalnum(*loc_s)) {
-        var_name[symbol_i] = *loc_s;
+        if (symbol_i >= MAX_NAME_LEN - 1) {
+            return NULL;
+        }
+
+        func_name[symbol_i] = *loc_s;
         loc_s++;
         symbol_i++;
     }
 
+    if (*loc_s == '(') {
+        loc_s++;
+    }
+    else {
+        return NULL;
+    }
+
     TreeNode* val = NULL;
 
-    if (strcmp(var_name, "sin") == 0) { // FIXME sin -> functions[0]
-
+    if (strcmp(func_name, "sin") == 0) { // FIXME sin -> functions[0]?
+        val = SIN(GetE(&loc_s));
     }
-    else if (strcmp(var_name, "arcsin") == 0) {
-
+    else if (strcmp(func_name, "arcsin") == 0) {
+        val = ARCSIN(GetE(&loc_s));
     }
-    else if (strcmp(var_name, "cos") == 0) {
-
+    else if (strcmp(func_name, "cos") == 0) {
+        val = COS(GetE(&loc_s));
     }
-    else if (strcmp(var_name, "arccos") == 0) {
-
+    else if (strcmp(func_name, "arccos") == 0) {
+        val = ARCCOS(GetE(&loc_s));
     }
-    else if (strcmp(var_name, "ln") == 0) {
+    else if (strcmp(func_name, "ln") == 0) {
+        val = LN(GetE(&loc_s));
+    }
+    else {
+        return NULL;
+    }
 
+    if (*loc_s == ')') {
+        loc_s++;
     }
     else {
         return NULL;

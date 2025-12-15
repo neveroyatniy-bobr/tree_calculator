@@ -7,7 +7,6 @@
 #include "expression_elem.hpp"
 #include "tree.hpp"
 
-//FIXME хочу чтобы сам читал количество членов enum
 static double var[2] = {1, 1};
 
 double GetVar(size_t i) {
@@ -96,9 +95,11 @@ static TreeNode* DiffSubTree(TreeNode* node) {
             case SIN:
                 return MUL(COS(cL), dL);
             case ARCSIN:
+                return MUL(POW(SUB(CONST(1), POW(cL, CONST(2))), CONST(-1/2)), dL);
             case COS:
                 return MUL(MUL(CONST(-1), SIN(cL)), dL);
             case ARCCOS:
+                return MUL(CONST(-1), MUL(POW(SUB(CONST(1), POW(cL, CONST(2))), CONST(-1/2)), dL));
             case LN:
                 return MUL(DIV(CONST(1), cL), dL);
             default:
@@ -123,62 +124,100 @@ void DiffTree(Tree* tree, Tree* diffed_tree) {
 
 static void CalculatorSubTreeTexDump(TreeNode* node) {
     tree_elem_t node_value = TreeNodeGetValue(node);
+    tree_elem_t node_parent_value = TreeNodeGetValue(TreeNodeGetParent(node));
     if (node_value.type == OPERATION) {
-        printf("(");
         switch (node_value.value.operation) {
-            case ADD: {
+            case ADD:
+                if ((node_parent_value.type == OPERATION && node_parent_value.value.operation == MUL) 
+                 || (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW)) {
+                    printf("(");
+                }
+
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
                 printf(" + ");
                 CalculatorSubTreeTexDump(TreeNodeGetRight(node));
 
-                printf(")");
+                if ((node_parent_value.type == OPERATION && node_parent_value.value.operation == MUL) 
+                 || (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW)) {
+                    printf(")");
+                }
 
                 return;
-            }
-            case SUB: {
+            case SUB:
+                if ((node_parent_value.type == OPERATION && node_parent_value.value.operation == MUL) 
+                 || (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW)) {
+                    printf("(");
+                }
+
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
                 printf(" - ");
                 CalculatorSubTreeTexDump(TreeNodeGetRight(node));
 
-                printf(")");
+                if ((node_parent_value.type == OPERATION && node_parent_value.value.operation == MUL) 
+                 || (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW)) {
+                    printf(")");
+                }
 
                 return;
-            }
-            case MUL: {
+            case MUL:
+                if (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW) {
+                    printf("(");
+                }
+
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
                 printf(" \\cdot ");
                 CalculatorSubTreeTexDump(TreeNodeGetRight(node));
 
-                printf(")");
+                if (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW) {
+                    printf(")");
+                }
 
                 return;
-            }
-            case DIV: {
+            case DIV:
                 printf("\\frac{");
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
                 printf("}{");
                 CalculatorSubTreeTexDump(TreeNodeGetRight(node));
                 printf("}");
 
-                printf(")");
-                
                 return;
-            }
-            case POW: {
+            case POW:
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
                 printf("^{");
                 CalculatorSubTreeTexDump(TreeNodeGetRight(node));
                 printf("}");
 
-                printf(")");
-            }
-            case LN: {
+                return;
+            case SIN:
+                printf("\\sin{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
+                printf("}");
+
+                return;
+            case ARCSIN:
+                printf("\\arcsin{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
+                printf("}");
+
+                return;
+            case COS:
+                printf("\\cos{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
+                printf("}");
+
+                return;
+            case ARCCOS:
+                printf("\\arccos{");
+                CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
+                printf("}");
+
+                return;
+            case LN:
                 printf("\\ln{");
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node));
                 printf("}");
 
-                printf(")");
-            }
+                return;
             default:
                 return;
         }

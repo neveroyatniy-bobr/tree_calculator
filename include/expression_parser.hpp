@@ -3,7 +3,7 @@
 
 #include "tree.hpp"
 
-#define MAX_VAR_NAME 128
+#define MAX_NAME_LEN 128
 
 static const char* functions[] = {"sin", "arcsin", "cos", "arccos", "ln"};
 
