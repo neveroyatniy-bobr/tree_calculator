@@ -43,6 +43,8 @@ int main() {
 
     TreeSimplify(&diff_tree);
 
+    TREE_DUMP(&diff_tree);
+
     free(start_s);
 
     TreeDestroy(&diff_tree);

@@ -181,9 +181,9 @@ TreeNode* GetP(char** s) {
         loc_s -= symbol_i;
 
         bool is_func = false;
-        int func_cnt = sizeof(functions) / sizeof(functions[0]);
+        int func_cnt = sizeof(OPERATION_NAME) / sizeof(OPERATION_NAME[0]);
         for (int func_i = 0; func_i < func_cnt; func_i++) {
-            if (strcmp(name, functions[func_i]) == 0) {
+            if (strcmp(name, OPERATION_NAME[func_i]) == 0) {
                 is_func = true;
             }
         }

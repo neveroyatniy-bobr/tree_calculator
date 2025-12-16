@@ -14,10 +14,14 @@ enum Operation {
     LN        = 9
 };
 
+static const char* OPERATION_NAME[] = {"+", "-", "*", "/", "^", "sin", "arcsin", "cos", "arccos", "ln"};
+
 enum Var {
     X = 0,
     Y = 1
 };
+
+static const char* VAR_NAME[] = {"x", "y"};
 
 enum DummyType {
     ROOT             = 0,

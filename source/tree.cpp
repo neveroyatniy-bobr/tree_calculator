@@ -154,13 +154,13 @@ static void TreeNodesBuildDump(FILE* build_dump_file, TreeNode* node) {
 
     if (node->left == NULL && node->right == NULL) {
         if (value.type == NUM) {
-            fprintf(build_dump_file, "    node_%p [label=\"value = %lf\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, value.value.num, node, parent, left, right, OBJECT_NODE_COLOR, OBJECT_NODE_PEN_WIDTH);
+            fprintf(build_dump_file, "    node_%p [label=\"value = %g\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, value.value.num, node, parent, left, right, OBJECT_NODE_COLOR, OBJECT_NODE_PEN_WIDTH);
         }
         else if (value.type == OPERATION) {
-            fprintf(build_dump_file, "    node_%p [label=\"value = %d\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, value.value.operation, node, parent, left, right, OBJECT_NODE_COLOR, OBJECT_NODE_PEN_WIDTH);
+            fprintf(build_dump_file, "    node_%p [label=\"value = %s\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, OPERATION_NAME[value.value.operation], node, parent, left, right, OBJECT_NODE_COLOR, OBJECT_NODE_PEN_WIDTH);
         }
         else if (value.type == VAR) {
-            fprintf(build_dump_file, "    node_%p [label=\"value = %d\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, value.value.var, node, parent, left, right, OBJECT_NODE_COLOR, OBJECT_NODE_PEN_WIDTH);
+            fprintf(build_dump_file, "    node_%p [label=\"value = %s\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, VAR_NAME[value.value.var], node, parent, left, right, OBJECT_NODE_COLOR, OBJECT_NODE_PEN_WIDTH);
         }
         else {
             fprintf(build_dump_file, "    node_%p [label=\"value = dummy\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, node, parent, left, right, OBJECT_NODE_COLOR, OBJECT_NODE_PEN_WIDTH);
@@ -168,13 +168,13 @@ static void TreeNodesBuildDump(FILE* build_dump_file, TreeNode* node) {
     }
     else {
         if (value.type == NUM) {
-            fprintf(build_dump_file, "    node_%p [label=\"value = %lf\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, value.value.num, node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
+            fprintf(build_dump_file, "    node_%p [label=\"value = %g\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, value.value.num, node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
         }
         else if (value.type == OPERATION) {
-            fprintf(build_dump_file, "    node_%p [label=\"value = %d\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, value.value.operation, node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
+            fprintf(build_dump_file, "    node_%p [label=\"value = %s\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, OPERATION_NAME[value.value.operation], node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
         }
         else if (value.type == VAR) {
-            fprintf(build_dump_file, "    node_%p [label=\"value = %d\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, value.value.var, node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
+            fprintf(build_dump_file, "    node_%p [label=\"value = %s\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", VAR_NAME[node, value.value.var], node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
         }
         else {
             fprintf(build_dump_file, "    node_%p [label=\"value = dummy\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
@@ -301,9 +301,9 @@ void TreeDump(Tree* tree, const char* file, int line) {
         return;
     }
 
-    fprintf(dump_file, "\n<p style=\"font-size: %upx;\">\n    size = %lu\n</p>\n", DUMP_FONT_SIZE, tree->size);
+    // fprintf(dump_file, "\n<p style=\"font-size: %upx;\">\n    size = %lu\n</p>\n", DUMP_FONT_SIZE, tree->size);
 
-    fprintf(dump_file, "<p style=\"font-size: %upx;\">\n    ERROR in %s:%d: %s</p>", DUMP_FONT_SIZE, file, line, TreeStrError(tree->last_error));
+    // fprintf(dump_file, "<p style=\"font-size: %upx;\">\n    ERROR in %s:%d: %s</p>", DUMP_FONT_SIZE, file, line, TreeStrError(tree->last_error));
 
     fclose(dump_file);
 }

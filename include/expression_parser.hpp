@@ -5,8 +5,6 @@
 
 #define MAX_NAME_LEN 128
 
-static const char* functions[] = {"sin", "arcsin", "cos", "arccos", "ln"};
-
 TreeNode* GetG(char** s);
 
 TreeNode* GetE(char** s);
