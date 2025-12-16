@@ -6,6 +6,7 @@
 
 #include "expression_elem.hpp"
 #include "tree.hpp"
+#include "utils.hpp"
 
 static double var[2] = {1, 1};
 
@@ -189,33 +190,33 @@ static void CalculatorSubTreeTexDump(TreeNode* node, FILE* build_file) {
 
                 return;
             case SIN:
-                fprintf(build_file, "\\sin{");
+                fprintf(build_file, "\\sin(");
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, "}");
+                fprintf(build_file, ")");
 
                 return;
             case ARCSIN:
-                fprintf(build_file, "\\arcsin{");
+                fprintf(build_file, "\\arcsin(");
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, "}");
+                fprintf(build_file, ")");
 
                 return;
             case COS:
-                fprintf(build_file, "\\cos{");
+                fprintf(build_file, "\\cos(");
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, "}");
+                fprintf(build_file, ")");
 
                 return;
             case ARCCOS:
-                fprintf(build_file, "\\arccos{");
+                fprintf(build_file, "\\arccos(");
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, "}");
+                fprintf(build_file, ")");
 
                 return;
             case LN:
-                fprintf(build_file, "\\ln{");
+                fprintf(build_file, "\\ln(");
                 CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, "}");
+                fprintf(build_file, ")");
 
                 return;
             default:
@@ -251,7 +252,7 @@ static void CalculatorSubTreeTexDump(TreeNode* node, FILE* build_file) {
 void TexDumpStart() {
     FILE* build_file = fopen(TEX_DUMP_BUILD_FILE_NAME, "w");
 
-    const char* file_start = "\\documentclass{article}\n\\usepackage{graphicx} % Required for inserting images\n\\title{dump}\n\\author{Николай Антипов}\n\\date{November 2025}\n\\begin{document}\n";
+    const char* file_start = "\\documentclass{article}\n\\usepackage{graphicx}\n\\usepackage[T2A]{fontenc}\n\\title{dump}\n\\author{Николай Антипов}\n\\date{November 2025}\n\\begin{document}\n";
 
     fprintf(build_file, "%s", file_start);
 
@@ -259,7 +260,14 @@ void TexDumpStart() {
 }
 
 void CalculatorTreeTexDump(Tree* tree) {
+    static size_t line_num = 1;
+
     FILE* build_file = fopen(TEX_DUMP_BUILD_FILE_NAME, "a");
+
+    if (line_num != 1) {
+        size_t frases_count = sizeof(FRASES) / sizeof(FRASES[0]);
+        fprintf(build_file, "%s\\newline\n", FRASES[RandInt(frases_count - 1)]);
+    }
 
     fprintf(build_file, "$");
     
@@ -269,6 +277,7 @@ void CalculatorTreeTexDump(Tree* tree) {
 
     fclose(build_file);
 
+    line_num++;
 }
 
 void TexDumpEnd() {

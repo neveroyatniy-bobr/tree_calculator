@@ -14,4 +14,6 @@ void SkipSpaces(FILE* stream);
 
 size_t FileSize(FILE* file);
 
+size_t RandInt(size_t max);
+
 #endif // PROTECTED_FREE_HPP_

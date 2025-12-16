@@ -9,6 +9,8 @@ static const double epsilone = 1e-12;
 static const char* TEX_DUMP_BUILD_FILE_NAME = "texdump.tex";
 static const char* TEX_DUMP_FILE_NAME = "texdump.pdf";
 
+static const char* FRASES[] = {"очевидно, что", "получим", "таким образом"};
+
 double GetVar(size_t i);
 
 double SetVar(size_t i, double value);

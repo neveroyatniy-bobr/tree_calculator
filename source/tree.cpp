@@ -174,7 +174,7 @@ static void TreeNodesBuildDump(FILE* build_dump_file, TreeNode* node) {
             fprintf(build_dump_file, "    node_%p [label=\"value = %s\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, OPERATION_NAME[value.value.operation], node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
         }
         else if (value.type == VAR) {
-            fprintf(build_dump_file, "    node_%p [label=\"value = %s\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", VAR_NAME[node, value.value.var], node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
+            fprintf(build_dump_file, "    node_%p [label=\"value = %s\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, VAR_NAME[value.value.var], node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
         }
         else {
             fprintf(build_dump_file, "    node_%p [label=\"value = dummy\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, node, parent, left, right, ATTRIBUTE_NODE_COLOR, ATTRIBUTE_NODE_PEN_WIDTH);
