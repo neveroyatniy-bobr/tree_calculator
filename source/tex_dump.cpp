@@ -178,7 +178,7 @@ void TexDumpEnd() {
     fclose(build_file);
 
     char command[BUILD_DUMP_COMMAND_SIZE + 1] = "";
-    snprintf(command, BUILD_DUMP_COMMAND_SIZE, "pdflatex %s 2>&1 /dev/null", TEX_DUMP_BUILD_FILE_NAME);
+    snprintf(command, BUILD_DUMP_COMMAND_SIZE, "pdflatex %s 2&1> /dev/null", TEX_DUMP_BUILD_FILE_NAME);
 
     if (system(command) != 0) {
         fprintf(stderr, "Ошибка при создании файла дампа");

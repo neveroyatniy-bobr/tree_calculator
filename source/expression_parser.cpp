@@ -45,6 +45,8 @@ TreeNode* GetE(char** s) {
     }
 
     while (*loc_s == '+' or *loc_s == '-') {
+        bool is_add = *loc_s == '+';
+
         loc_s++;
 
         TreeNode* op_val = GetT(&loc_s);
@@ -55,7 +57,7 @@ TreeNode* GetE(char** s) {
 
         TreeNode* op_node = NULL; 
 
-        if (*loc_s == '+') {
+        if (is_add) {
             op_node = ADD(val, op_val);
         }
         else {
@@ -82,7 +84,9 @@ TreeNode* GetT(char** s) {
         return NULL;
     }
 
-    while (*loc_s == '*' or *loc_s == '/') {
+    while (*loc_s == '*' || *loc_s == '/') {
+        bool is_mul = *loc_s == '*';
+
         loc_s++;
 
         TreeNode* op_val = GetPow(&loc_s);
@@ -93,7 +97,7 @@ TreeNode* GetT(char** s) {
 
         TreeNode* op_node = NULL;
 
-        if (*loc_s == '*') {
+        if (is_mul) {
             op_node = MUL(val, op_val);
         }
         else {
