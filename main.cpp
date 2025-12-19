@@ -13,9 +13,9 @@ int main() {
     TreeInit(&calculator_tree);
 
     char* s = NULL;
-    size_t n = 0;
+    size_t sn = 0;
 
-    getline(&s, &n, stdin);
+    getline(&s, &sn, stdin);
     char* start_s = s;
     s[strlen(s) - 1] = '\0';
 
@@ -30,10 +30,24 @@ int main() {
     
     TreeSimplify(&calculator_tree);
     
+    printf("Производную какого порядка вы хотите взять?:\n");
+    size_t n = 0;
+    scanf("%lu", &n);
+
+    if (n == 0) {
+        printf("Не имеет смысла\n");
+        return 0;
+    }
+
     Tree diff_tree = {};
     TreeInit(&diff_tree);
     
     DiffTree(&calculator_tree, &diff_tree);
+
+    for (size_t diff_i = 0; diff_i < n - 1; diff_i++) {
+        DiffTree(&diff_tree, &diff_tree);
+        TreeSimplify(&diff_tree);
+    }
     
     CalculatorTreeTexDump(&diff_tree);
     
