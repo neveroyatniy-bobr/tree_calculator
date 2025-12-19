@@ -156,22 +156,34 @@ static void TreeBuildDump(FILE* build_dump_file, TreeNode* node) {
         pen_width = ATTRIBUTE_NODE_PEN_WIDTH;
     }
 
+    fprintf(build_dump_file, "    node_%p [label=\"", node);
+
+    if (DUMP_ADRESSES) {
+        fprintf(build_dump_file, "value = ");
+    }
+
     switch(value.type) {
         case NUM:
-            fprintf(build_dump_file, "    node_%p [label=\"value = %g\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, value.value.num, node, parent, left, right, node_color, pen_width);
+            fprintf(build_dump_file, "%g", value.value.num);
             break;
         case OPERATION:
-            fprintf(build_dump_file, "    node_%p [label=\"value = %s\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, OPERATION_NAME[value.value.operation], node, parent, left, right, node_color, pen_width);
+            fprintf(build_dump_file, "%s", OPERATION_NAME[value.value.operation]);
             break;
         case VAR:
-            fprintf(build_dump_file, "    node_%p [label=\"value = %s\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, VAR_NAME[value.value.var], node, parent, left, right, node_color, pen_width);
+            fprintf(build_dump_file, "%s", VAR_NAME[value.value.var]);
             break;
         case DUMMY:
-            fprintf(build_dump_file, "    node_%p [label=\"value = dummy\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p\", color = \"%s\", penwidth = %lu];\n", node, node, parent, left, right, node_color, pen_width);
+            fprintf(build_dump_file, "dummy");
             break;
         default:
             break;
     }
+
+    if (DUMP_ADRESSES) {
+        fprintf(build_dump_file, "\\nself = %p\\nparent = %p\\nleft = %p\\nright = %p", node, parent, left, right);
+    }
+
+    fprintf(build_dump_file, "\", color = \"%s\", penwidth = %lu];\n", node_color, pen_width);
 
     if (parent != NULL) {
         fprintf(build_dump_file, "    node_%p -> node_%p [label = \"parent\", color = \"%s\"];\n", node, parent, PARENT_EDGE_COLOR);

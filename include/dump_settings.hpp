@@ -18,6 +18,8 @@ static const size_t ATTRIBUTE_NODE_PEN_WIDTH = 2;
 
 static const unsigned int DUMP_FONT_SIZE = 36;
 
+static const bool DUMP_ADRESSES = false;
+
 static const char DUMP_FILE_NAME[] = "dump_file.svg";
 static const char BUILD_DUMP_FILE_NAME[] = "build_dump_file.dot";
 
