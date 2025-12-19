@@ -6,7 +6,7 @@
 static const char* TEX_DUMP_BUILD_FILE_NAME = "texdump.tex";
 static const char* TEX_DUMP_FILE_NAME = "texdump.pdf";
 
-static const char* FRASES[] = {"очевидно, что", "получим", "таким образом"};
+static const char* FRASES[] = {"Очевидно, что:", "Получим:", "Таким образом:"};
 
 void TexDumpStart();
 

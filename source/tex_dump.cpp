@@ -138,9 +138,9 @@ void TexDumpStart() {
                              "\\usepackage{graphicx}\n"
                              "\\usepackage[T2A]{fontenc}\n"
                              "\\title{dump}\n"
-                             "\\author{Николай Антипов}\n"
-                             "\\date{November 2025}\n"
-                             "\\begin{document}\n";
+                             "\\linespread{2}"
+                             "\\begin{document}\n"
+                             "\\begin{center}\n";
 
     fprintf(build_file, "%s", file_start);  
 
@@ -152,12 +152,17 @@ void CalculatorTreeTexDump(Tree* tree) {
 
     FILE* build_file = fopen(TEX_DUMP_BUILD_FILE_NAME, "a");
 
+    fprintf(build_file, "\\textbf{%d)", line_num);
+
     if (line_num != 1) {
         size_t frases_count = sizeof(FRASES) / sizeof(FRASES[0]);
-        fprintf(build_file, "%s\\newline\n", FRASES[RandInt(frases_count - 1)]);
+        fprintf(build_file, "%s", FRASES[RandInt(frases_count - 1)]);
+    }
+    else {
+        fprintf(build_file, "Давайте возьмем производную от данного выражения:");
     }
 
-    fprintf(build_file, "$");
+    fprintf(build_file, "}\\newline\n$");
     
     CalculatorSubTreeTexDump(TreeNodeGetLeft(TreeGetRoot(tree)), build_file);
 
@@ -171,7 +176,8 @@ void CalculatorTreeTexDump(Tree* tree) {
 void TexDumpEnd() {
     FILE* build_file = fopen(TEX_DUMP_BUILD_FILE_NAME, "a");
 
-    const char* file_end = "\\end{document}\n";
+    const char* file_end = "\\end{center}"
+                           "\\end{document}\n";
 
     fprintf(build_file, "%s", file_end);
 
