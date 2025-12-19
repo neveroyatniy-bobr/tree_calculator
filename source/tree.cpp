@@ -151,9 +151,13 @@ static void TreeBuildDump(FILE* build_dump_file, TreeNode* node) {
         node_color = OBJECT_NODE_COLOR;
         pen_width = OBJECT_NODE_PEN_WIDTH;
     }
-    else {
+    else if (node->left != NULL && node->right != NULL) {
         node_color = ATTRIBUTE_NODE_COLOR;
         pen_width = ATTRIBUTE_NODE_PEN_WIDTH;
+    }
+    else {
+        node_color = INVALID_NODE_COLOR;
+        pen_width = INVALID_NODE_PEN_WIDTH;
     }
 
     fprintf(build_dump_file, "    node_%p [label=\"", node);

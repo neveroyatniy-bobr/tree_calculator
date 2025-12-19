@@ -9,115 +9,76 @@ static bool IsOp(TreeNode* node, Operation op) {
     return (node_value.type == OPERATION && node_value.value.operation == op);
 }
 
+struct OpDump {
+    Operation op;
+    size_t priority;
+    bool is_bin;
+    const char* prefix;
+    const char* infix;
+    const char* postfix;
+};
+
+//Нужно в порядке объявления в enum Operation
+OpDump OP_DUMPS[] = { 
+    {    ADD, 3,  true, "", " + ", ""        },
+    {    SUB, 3,  true, "", " - ", ""        },
+    {    MUL, 2,  true, "", " \\cdot ", ""   },
+    {    DIV, 2,  true, "\\frac{", "}{", "}" },
+    {    POW, 1,  true, "", "^{", "}"        },
+    {    SIN, 0, false, "\\sin(", "", ")"    },
+    { ARCSIN, 0, false, "\\arcsin(", "", ")" },
+    {    COS, 0, false, "\\cos(", "", ")"    },
+    { ARCCOS, 0, false, "\\arccos(", "", ")" },
+    {     LN, 0, false, "\\ln(", "", ")"     }
+};
+const size_t op_dumps_cnt = sizeof(OP_DUMPS) / sizeof(OP_DUMPS[0]);
+
 static void CalculatorSubTreeTexDump(TreeNode* node, FILE* build_file) {
     tree_elem_t node_value = TreeNodeGetValue(node);
     tree_elem_t node_parent_value = TreeNodeGetValue(TreeNodeGetParent(node));
     if (node_value.type == OPERATION) {
-        switch (node_value.value.operation) {
-            case ADD:
-                if (IsOp(TreeNodeGetParent(node), MUL) || IsOp(TreeNodeGetParent(node), POW)) {
-                    fprintf(build_file, "(");
-                }
-
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, " + ");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
-
-                if (IsOp(TreeNodeGetParent(node), MUL) || IsOp(TreeNodeGetParent(node), POW)) {
-                    fprintf(build_file, ")");
-                }
-
-                return;
-            case SUB:
-                if (IsOp(TreeNodeGetParent(node), MUL) || IsOp(TreeNodeGetParent(node), POW)) {
-                    fprintf(build_file, "(");
-                }
-
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, " - ");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
-
-                if (IsOp(TreeNodeGetParent(node), MUL) || IsOp(TreeNodeGetParent(node), POW)) {
-                    fprintf(build_file, ")");
-                }
-
-                return;
-            case MUL:
-                if (IsOp(TreeNodeGetParent(node), POW)) {
-                    fprintf(build_file, "(");
-                }
-
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, " \\cdot ");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
-
-                if (node_parent_value.type == OPERATION && node_parent_value.value.operation == POW) {
-                    fprintf(build_file, ")");
-                }
-
-                return;
-            case DIV:
-                fprintf(build_file, "\\frac{");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, "}{");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
-                fprintf(build_file, "}");
-
-                return;
-            case POW:
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, "^{");
-                CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
-                fprintf(build_file, "}");
-
-                return;
-            case SIN:
-                fprintf(build_file, "\\sin(");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, ")");
-
-                return;
-            case ARCSIN:
-                fprintf(build_file, "\\arcsin(");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, ")");
-
-                return;
-            case COS:
-                fprintf(build_file, "\\cos(");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, ")");
-
-                return;
-            case ARCCOS:
-                fprintf(build_file, "\\arccos(");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, ")");
-
-                return;
-            case LN:
-                fprintf(build_file, "\\ln(");
-                CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
-                fprintf(build_file, ")");
-
-                return;
-            default:
-                return;
+        OpDump op_dump = OP_DUMPS[node_value.value.operation];
+        bool is_brackets = false;
+        if (node_parent_value.type == OPERATION) {
+            size_t parent_priority = (OP_DUMPS[node_parent_value.value.operation]).priority;
+            if (op_dump.priority > parent_priority) {
+                is_brackets = true;
+            }
         }
+
+        if (is_brackets) {
+            fprintf(build_file, "(");
+        }
+
+        fprintf(build_file, "%s", op_dump.prefix);
+
+        CalculatorSubTreeTexDump(TreeNodeGetLeft(node), build_file);
+
+        if (op_dump.is_bin) {
+            fprintf(build_file, "%s", op_dump.infix);
+
+            CalculatorSubTreeTexDump(TreeNodeGetRight(node), build_file);
+        }
+
+        fprintf(build_file, "%s", op_dump.postfix);
+
+        if (is_brackets) {
+            fprintf(build_file, ")");
+        }
+
+        return ;
     }
 
     if (node_value.type == VAR) {
+        const char* var_str = "unknown";
         switch (node_value.value.var)
         {
-        case X:
-            fprintf(build_file, "x");
-            return;
-        case Y:
-            fprintf(build_file, "y");
-            return;
-        default:
-            return;
+            case X:  var_str = "x";       break;
+            case Y:  var_str = "y";       break;
+            default: var_str = "unknown"; break;
         }
+        fprintf(build_file, "%s", var_str);
+        return ;
     }
     
     if (node_value.value.num < 0) {
@@ -184,7 +145,7 @@ void TexDumpEnd() {
     fclose(build_file);
 
     char command[BUILD_DUMP_COMMAND_SIZE + 1] = "";
-    snprintf(command, BUILD_DUMP_COMMAND_SIZE, "pdflatex %s 2&1> /dev/null", TEX_DUMP_BUILD_FILE_NAME);
+    snprintf(command, BUILD_DUMP_COMMAND_SIZE, "pdflatex %s > /dev/null", TEX_DUMP_BUILD_FILE_NAME);
 
     if (system(command) != 0) {
         fprintf(stderr, "Ошибка при создании файла дампа");

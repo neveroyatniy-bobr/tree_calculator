@@ -167,6 +167,17 @@ static void SubTreeSimpleOperations(TreeNode* node) {
                 TreeNodeLinkLeft(node, node_right.left);
                 TreeNodeLinkRight(node, node_right.right);
             }
+            else if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 0)) {
+                TreeNode node_left = *node->left;
+                TreeNodeDestroy(&node->left);
+                TreeNodeDestroy(&node->right);
+
+                TreeNodeSetValue(node, node_left.value);
+                TreeNodeLinkLeft(node, node_left.left);
+                TreeNodeLinkRight(node, node_left.right);
+            }
+        }
+        else if (node_value.value.operation == SUB) {
             if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 0)) {
                 TreeNode node_left = *node->left;
                 TreeNodeDestroy(&node->left);
@@ -177,18 +188,7 @@ static void SubTreeSimpleOperations(TreeNode* node) {
                 TreeNodeLinkRight(node, node_left.right);
             }
         }
-        if (node_value.value.operation == SUB) {
-            if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 0)) {
-                TreeNode node_left = *node->left;
-                TreeNodeDestroy(&node->left);
-                TreeNodeDestroy(&node->right);
-
-                TreeNodeSetValue(node, node_left.value);
-                TreeNodeLinkLeft(node, node_left.left);
-                TreeNodeLinkRight(node, node_left.right);
-            }
-        }
-        if (node_value.value.operation == MUL) {
+        else if (node_value.value.operation == MUL) {
             if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 1)) {
                 TreeNode node_right = *node->right;
                 TreeNodeDestroy(&node->left);
@@ -198,6 +198,29 @@ static void SubTreeSimpleOperations(TreeNode* node) {
                 TreeNodeLinkLeft(node, node_right.left);
                 TreeNodeLinkRight(node, node_right.right);
             }
+            else if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 1)) {
+                TreeNode node_left = *node->left;
+                TreeNodeDestroy(&node->left);
+                TreeNodeDestroy(&node->right);
+
+                TreeNodeSetValue(node, node_left.value);
+                TreeNodeLinkLeft(node, node_left.left);
+                TreeNodeLinkRight(node, node_left.right);
+            }
+            else if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 0)) {
+                TreeSubTreeDestroy(&node->left);
+                TreeSubTreeDestroy(&node->right);
+
+                TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
+            }
+            else if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 0)) {
+                TreeSubTreeDestroy(&node->left);
+                TreeSubTreeDestroy(&node->right);
+
+                TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
+            }
+        }
+        else if (node_value.value.operation == DIV) {
             if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 1)) {
                 TreeNode node_left = *node->left;
                 TreeNodeDestroy(&node->left);
@@ -207,37 +230,14 @@ static void SubTreeSimpleOperations(TreeNode* node) {
                 TreeNodeLinkLeft(node, node_left.left);
                 TreeNodeLinkRight(node, node_left.right);
             }
-            if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 0)) {
-                TreeSubTreeDestroy(&node->left);
-                TreeSubTreeDestroy(&node->right);
-
-                TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
-            }
-            if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 0)) {
+            else if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 0)) {
                 TreeSubTreeDestroy(&node->left);
                 TreeSubTreeDestroy(&node->right);
 
                 TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
             }
         }
-        if (node_value.value.operation == DIV) {
-            if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 1)) {
-                TreeNode node_left = *node->left;
-                TreeNodeDestroy(&node->left);
-                TreeNodeDestroy(&node->right);
-
-                TreeNodeSetValue(node, node_left.value);
-                TreeNodeLinkLeft(node, node_left.left);
-                TreeNodeLinkRight(node, node_left.right);
-            }
-            if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 0)) {
-                TreeSubTreeDestroy(&node->left);
-                TreeSubTreeDestroy(&node->right);
-
-                TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
-            }
-        }
-        if (node_value.value.operation == POW) {
+        else if (node_value.value.operation == POW) {
             if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 0)) {
                 if (IsEqual(CalculateSubTree(TreeNodeGetRight(node)), 0)) {
                     TreeSubTreeDestroy(&node->left);
@@ -252,19 +252,19 @@ static void SubTreeSimpleOperations(TreeNode* node) {
                     TreeNodeSetValue(node, {.type = NUM, .value = {.num = 0}});
                 }
             }
-            if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 1)) {
+            else if (left_sub_tree.type == NUM && IsEqual(left_sub_tree.value.num, 1)) {
                 TreeSubTreeDestroy(&node->left);
                 TreeSubTreeDestroy(&node->right);
 
                 TreeNodeSetValue(node, {.type = NUM, .value = {.num = 1}});
             }
-            if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 0)) {
+            else if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 0)) {
                 TreeSubTreeDestroy(&node->left);
                 TreeSubTreeDestroy(&node->right);
 
                 TreeNodeSetValue(node, {.type = NUM, .value = {.num = 1}});
             }
-            if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 1)) {
+            else if (right_sub_tree.type == NUM && IsEqual(right_sub_tree.value.num, 1)) {
                 TreeSubTreeDestroy(&node->right);
                 TreeNode* node_left = node->left;
 

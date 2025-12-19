@@ -16,6 +16,9 @@ static const size_t OBJECT_NODE_PEN_WIDTH = 2;
 static const char* ATTRIBUTE_NODE_COLOR = "purple";
 static const size_t ATTRIBUTE_NODE_PEN_WIDTH = 2;
 
+static const char* INVALID_NODE_COLOR = "red";
+static const size_t INVALID_NODE_PEN_WIDTH = 100;
+
 static const unsigned int DUMP_FONT_SIZE = 36;
 
 static const bool DUMP_ADRESSES = false;
